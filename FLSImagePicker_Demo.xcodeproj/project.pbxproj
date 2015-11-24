@@ -17,6 +17,7 @@
 		901223F31C04B0B300D00A90 /* FLSAssetsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 901223ED1C04B0B300D00A90 /* FLSAssetsTableViewCell.m */; };
 		901223F41C04B0B300D00A90 /* FLSImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 901223EF1C04B0B300D00A90 /* FLSImagePickerController.m */; };
 		901223F51C04B0B300D00A90 /* FLSImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 901223F11C04B0B300D00A90 /* FLSImageViewController.m */; };
+		901223F71C04C14800D00A90 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 901223F61C04C14800D00A90 /* Podfile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		901223EF1C04B0B300D00A90 /* FLSImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FLSImagePickerController.m; path = FLSImagePicker/FLSImagePickerController.m; sourceTree = "<group>"; };
 		901223F01C04B0B300D00A90 /* FLSImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FLSImageViewController.h; path = FLSImagePicker/FLSImageViewController.h; sourceTree = "<group>"; };
 		901223F11C04B0B300D00A90 /* FLSImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FLSImageViewController.m; path = FLSImagePicker/FLSImageViewController.m; sourceTree = "<group>"; };
+		901223F61C04C14800D00A90 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Podfile; path = ../FLSImagePicker_Demo/Podfile; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				901223C51C04AB9600D00A90 /* FLSImagePicker_Demo */,
+				901223F61C04C14800D00A90 /* Podfile */,
 				901223C41C04AB9600D00A90 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -166,6 +169,7 @@
 			files = (
 				901223D61C04AB9600D00A90 /* LaunchScreen.storyboard in Resources */,
 				901223D31C04AB9600D00A90 /* Assets.xcassets in Resources */,
+				901223F71C04C14800D00A90 /* Podfile in Resources */,
 				901223D11C04AB9600D00A90 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -334,6 +338,7 @@
 				901223DC1C04AB9600D00A90 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
