@@ -8,7 +8,7 @@
 
 #import "FLSAlbumViewController.h"
 #import "FLSImagePickerController.h"
-#import "FLSImageViewController.h"
+#import "FLSItemViewController.h"
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/UTCoreTypes.h>
@@ -30,12 +30,17 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
 
     [self.navigationItem setTitle:NSLocalizedString(@"Loading...", nil)];
     
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:(FLSImagePickerController*)self.navigationController action:@selector(closeImagePicker)];
     [self.navigationItem setRightBarButtonItem:cancelButton];
+    
+    if (!_mediaTypes.count) {
+        _mediaTypes = @[@(PHAssetMediaTypeVideo), @(PHAssetMediaTypeImage)];
+    }
     
     self.assetGroups            = [NSMutableArray new];
     self.imageManager           = [PHImageManager defaultManager];
@@ -59,6 +64,23 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark - Getters
+- (ALAssetsFilter *)assetFilter
+{
+    if([self.mediaTypes containsObject:(NSString *)kUTTypeImage] && [self.mediaTypes containsObject:(NSString *)kUTTypeMovie])
+    {
+        return [ALAssetsFilter allAssets];
+    }
+    else if([self.mediaTypes containsObject:(NSString *)kUTTypeMovie])
+    {
+        return [ALAssetsFilter allVideos];
+    }
+    else
+    {
+        return [ALAssetsFilter allPhotos];
+    }
+}
+
 #pragma mark - Base
 - (void) loadAlbums:(void(^)(void))completion {
     
@@ -70,7 +92,7 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
     
     //Fetch PHAssetCollections:
     PHFetchOptions *options = [[PHFetchOptions alloc] init];
-    options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", @[@(PHAssetMediaTypeImage)]];
+    options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", _mediaTypes];
     options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
     PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithOptions:options];
     
@@ -84,7 +106,7 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
         if ([collection isKindOfClass:[PHAssetCollection class]])
         {
             PHFetchOptions *options = [[PHFetchOptions alloc] init];
-            options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", @[@(PHAssetMediaTypeImage)]];
+            options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", _mediaTypes];
             PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
             
             //Albums collections are allways PHAssetCollectionType=1 & PHAssetCollectionSubtype=2
@@ -148,6 +170,9 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
     NSInteger currentTag =  ++cell.tag;
     
     NSDictionary *currentFetchResultRecord = [self.assetGroups objectAtIndex:indexPath.row];
+    if ([currentFetchResultRecord isKindOfClass:[ALAssetsGroup class]]) {
+        [(ALAssetsGroup*)currentFetchResultRecord setAssetsFilter:[self assetFilter]];
+    }
     PHFetchResult *assetsFetchResult = [currentFetchResultRecord allValues][0];
     cell.textLabel.text = [NSString stringWithFormat:@"%@ %lu", [currentFetchResultRecord allKeys][0],(unsigned long)assetsFetchResult.count];
     
@@ -193,7 +218,7 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    FLSImageViewController *picker = [FLSImageViewController new];
+    FLSItemViewController *picker = [FLSItemViewController new];
     picker.assetGroup = [[self.assetGroups objectAtIndex:indexPath.row] allValues][0];
     
     [self.navigationController pushViewController:picker animated:YES];

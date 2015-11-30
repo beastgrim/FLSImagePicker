@@ -6,7 +6,7 @@
 //  Copyright © 2015 Vitalii Roditieliev. All rights reserved.
 //
 
-#import "FLSImageViewController.h"
+#import "FLSItemViewController.h"
 #import "FLSImagePickerController.h"
 #import "FLSAssetsTableViewCell.h"
 
@@ -14,7 +14,7 @@
 
 NSString *  const FLSAssetsCellId   = @"FLSAssetsCellId";
 
-@interface FLSImageViewController () <PHPhotoLibraryChangeObserver, FLSAssetsTableViewCellDelegate>
+@interface FLSItemViewController () <PHPhotoLibraryChangeObserver, FLSAssetsTableViewCellDelegate>
 
 @property (nonatomic, assign) NSInteger columns;
 @property (nonatomic, strong) NSMutableArray * assets;
@@ -24,7 +24,7 @@ NSString *  const FLSAssetsCellId   = @"FLSAssetsCellId";
 
 @end
 
-@implementation FLSImageViewController
+@implementation FLSItemViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];

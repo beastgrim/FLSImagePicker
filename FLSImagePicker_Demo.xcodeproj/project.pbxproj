@@ -19,7 +19,7 @@
 		902D50B51C05AB6B00738A4F /* FLSAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 902D50AE1C05AB6B00738A4F /* FLSAlbumViewController.m */; };
 		902D50B61C05AB6B00738A4F /* FLSAssetsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 902D50B01C05AB6B00738A4F /* FLSAssetsTableViewCell.m */; };
 		902D50B71C05AB6B00738A4F /* FLSImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 902D50B21C05AB6B00738A4F /* FLSImagePickerController.m */; };
-		902D50B81C05AB6B00738A4F /* FLSImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 902D50B41C05AB6B00738A4F /* FLSImageViewController.m */; };
+		902D50B81C05AB6B00738A4F /* FLSItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 902D50B41C05AB6B00738A4F /* FLSItemViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,8 +42,8 @@
 		902D50B01C05AB6B00738A4F /* FLSAssetsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLSAssetsTableViewCell.m; sourceTree = "<group>"; };
 		902D50B11C05AB6B00738A4F /* FLSImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLSImagePickerController.h; sourceTree = "<group>"; };
 		902D50B21C05AB6B00738A4F /* FLSImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLSImagePickerController.m; sourceTree = "<group>"; };
-		902D50B31C05AB6B00738A4F /* FLSImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLSImageViewController.h; sourceTree = "<group>"; };
-		902D50B41C05AB6B00738A4F /* FLSImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLSImageViewController.m; sourceTree = "<group>"; };
+		902D50B31C05AB6B00738A4F /* FLSItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLSItemViewController.h; sourceTree = "<group>"; };
+		902D50B41C05AB6B00738A4F /* FLSItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLSItemViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,14 +104,14 @@
 		902D50AC1C05AB6B00738A4F /* FLSImagePickerController */ = {
 			isa = PBXGroup;
 			children = (
-				902D50AD1C05AB6B00738A4F /* FLSAlbumViewController.h */,
-				902D50AE1C05AB6B00738A4F /* FLSAlbumViewController.m */,
-				902D50AF1C05AB6B00738A4F /* FLSAssetsTableViewCell.h */,
-				902D50B01C05AB6B00738A4F /* FLSAssetsTableViewCell.m */,
 				902D50B11C05AB6B00738A4F /* FLSImagePickerController.h */,
 				902D50B21C05AB6B00738A4F /* FLSImagePickerController.m */,
-				902D50B31C05AB6B00738A4F /* FLSImageViewController.h */,
-				902D50B41C05AB6B00738A4F /* FLSImageViewController.m */,
+				902D50AD1C05AB6B00738A4F /* FLSAlbumViewController.h */,
+				902D50AE1C05AB6B00738A4F /* FLSAlbumViewController.m */,
+				902D50B31C05AB6B00738A4F /* FLSItemViewController.h */,
+				902D50B41C05AB6B00738A4F /* FLSItemViewController.m */,
+				902D50AF1C05AB6B00738A4F /* FLSAssetsTableViewCell.h */,
+				902D50B01C05AB6B00738A4F /* FLSAssetsTableViewCell.m */,
 			);
 			path = FLSImagePickerController;
 			sourceTree = "<group>";
@@ -189,7 +189,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				902D50B81C05AB6B00738A4F /* FLSImageViewController.m in Sources */,
+				902D50B81C05AB6B00738A4F /* FLSItemViewController.m in Sources */,
 				902D50B51C05AB6B00738A4F /* FLSAlbumViewController.m in Sources */,
 				901223CE1C04AB9600D00A90 /* ViewController.m in Sources */,
 				901223CB1C04AB9600D00A90 /* AppDelegate.m in Sources */,

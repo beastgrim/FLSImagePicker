@@ -19,7 +19,9 @@
 @implementation ViewController
 
 - (IBAction)showImagePicker:(id)sender {
-    FLSImagePickerController *imagePicker = [FLSImagePickerController new];
+    FLSImagePickerController *imagePicker   = [FLSImagePickerController new];
+//    imagePicker.mediaTypes                  = @[@(PHAssetMediaTypeVideo)];
+    
     [self presentViewController:imagePicker animated:YES completion:nil];
         
     imagePicker.completionHandler = ^(NSArray *selectedAssets) {

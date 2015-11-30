@@ -143,8 +143,8 @@ CGFloat     const FLSCellPadding           = 1.0;
         UIImage *image = [_images objectAtIndex:i];
         [image drawInRect:imageRect];
         
-        CGRect checkRect = CGRectInset(imageRect, _sizeWith/3.2, _sizeWith/3.2);
-        checkRect = CGRectOffset(checkRect, _sizeWith/4, _sizeWith/4);
+        CGRect checkRect = CGRectInset(imageRect, _sizeWith/3, _sizeWith/3);
+        checkRect = CGRectOffset(checkRect, _sizeWith/3, _sizeWith/3);
         
         BOOL selected = _selectedMask & 1<<i ;
         if (selected) {
@@ -152,7 +152,41 @@ CGFloat     const FLSCellPadding           = 1.0;
             CGContextFillRect(context, imageRect);
         }
         [self drawCheckedRect:checkRect selected:selected];
+        
+        PHAsset *asset = _assets[i];
+        if (asset.mediaType == PHAssetMediaTypeVideo) {
+            CGFloat height = imageRect.size.height/5.5;
+            CGRect videoRect = imageRect;
+            videoRect.size.height = height;
+            [self drawVideoInfoRect:videoRect duration:asset.duration];
+        }
     }
+}
+
+- (void) drawVideoInfoRect:(CGRect)rect duration:(NSTimeInterval)duration {
+
+    [[UIColor whiteColor] set];
+    CGRect elipseRect = CGRectMake(rect.origin.x + 4, rect.origin.y + 4, (rect.size.height-8), rect.size.height-8);
+    
+    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:elipseRect cornerRadius:elipseRect.size.width/6];
+    [path fill];
+    
+    NSString *info = [NSString stringWithFormat:@"%d:%02d", (int)(duration/60), (int)duration%60];
+    NSDictionary *attr;
+    if (!attr) {
+        attr = @{NSFontAttributeName:[UIFont systemFontOfSize:rect.size.height-8], NSForegroundColorAttributeName: [UIColor whiteColor]};
+    }
+    CGSize infoSize = [info sizeWithAttributes:attr];
+    [info drawAtPoint:CGPointMake(rect.origin.x + rect.size.width-infoSize.width-4, (rect.size.height-infoSize.height)/2) withAttributes:attr];
+    
+    path = [UIBezierPath bezierPath];
+    [path moveToPoint: CGPointMake(rect.origin.x + elipseRect.size.width + 4, CGRectGetMidY(rect))];
+    [path addLineToPoint: CGPointMake(rect.origin.x + elipseRect.size.width + elipseRect.size.width/2 + 4, rect.origin.y+4)];
+    [path addLineToPoint: CGPointMake(rect.origin.x + elipseRect.size.width + elipseRect.size.width/2 + 4, CGRectGetMaxY(rect)-4)];
+    [path closePath];
+    path.lineCapStyle = kCGLineCapRound;
+    path.lineWidth = 1;
+    [path fill];
 }
 
 - (void) drawCheckedRect:(CGRect)rect selected:(BOOL)selected

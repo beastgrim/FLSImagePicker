@@ -27,6 +27,9 @@
     self = [super initWithRootViewController:rootViewController];
     if (self) {
         _selectedAssets = [NSMutableSet new];
+        if ([rootViewController isKindOfClass:[FLSAlbumViewController class]]) {
+            [(FLSAlbumViewController*)rootViewController setMediaTypes:_mediaTypes];
+        }
     }
     return self;
 }

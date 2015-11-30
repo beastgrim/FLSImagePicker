@@ -10,7 +10,7 @@
 
 @class PHFetchResult;
 
-@interface FLSImageViewController : UITableViewController
+@interface FLSItemViewController : UITableViewController
 
 @property (nonatomic, strong) PHFetchResult * assetGroup;
 
