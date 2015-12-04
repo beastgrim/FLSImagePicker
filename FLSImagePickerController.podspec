@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "FLSImagePickerController"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "A Multiple Selection Image Picker from photo library."
   s.homepage     = "https://github.com/beastgrim/FLSImagePicker"
   s.license      = "MIT"
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.social_media_url   = "http://vk.com/dj_vize"
   s.platform     = :ios, "8.0"
 
-  s.source       = { :git => "https://github.com/beastgrim/FLSImagePicker.git", :tag => "0.0.1" }
+  s.source       = { :git => "https://github.com/beastgrim/FLSImagePicker.git", :tag => "0.0.2" }
 
   s.source_files  = "FLSImagePicker_Demo/FLSImagePickerController/*.{h,m}"
   s.exclude_files = "Classes/Exclude"

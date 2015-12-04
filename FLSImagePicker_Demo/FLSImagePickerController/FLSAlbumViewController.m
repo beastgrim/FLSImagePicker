@@ -16,13 +16,14 @@
 
 
 NSString *  const FLSAlbumCellId    = @"FLSAlbumCellId";
-CGFloat     const FLSAlbumCellHeight   = 70.0;
+CGFloat     const FLSAlbumCellHeight   = 80.0;
 
 
 
 @interface FLSAlbumViewController () <PHPhotoLibraryChangeObserver>
 
-@property (strong) PHImageManager *imageManager;
+@property (strong, nonatomic) PHImageManager    * imageManager;
+@property (strong, nonatomic) UIImage           * placeholderImage;
 
 @end
 
@@ -44,13 +45,12 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
     
     self.assetGroups            = [NSMutableArray new];
     self.imageManager           = [PHImageManager defaultManager];
+    
+//    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:FLSAlbumCellId];
+    [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+
 
     [self loadAlbums:nil];
-    
-    [self fetchData];
-    
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:FLSAlbumCellId];
-    [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -58,8 +58,13 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
     
     NSIndexPath *selectedRow = [self.tableView indexPathForSelectedRow];
     if (selectedRow) [self.tableView deselectRowAtIndexPath:selectedRow animated:animated];
+
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
@@ -84,6 +89,7 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
 #pragma mark - Base
 - (void) loadAlbums:(void(^)(void))completion {
     
+    [self fetchData];
     if (completion) completion();
 }
 
@@ -162,11 +168,21 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
     return FLSAlbumCellHeight;
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+
+}
+
 #pragma mark Table delegate
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:FLSAlbumCellId forIndexPath:indexPath];
-    cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    UITableViewCell *cell       = [tableView dequeueReusableCellWithIdentifier:FLSAlbumCellId];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:FLSAlbumCellId];
+    }
+    cell.accessoryType          = UITableViewCellAccessoryDisclosureIndicator;
+    cell.imageView.contentMode  = UIViewContentModeScaleAspectFit;
+    cell.imageView.image        = _placeholderImage;
+    
     NSInteger currentTag =  ++cell.tag;
     
     NSDictionary *currentFetchResultRecord = [self.assetGroups objectAtIndex:indexPath.row];
@@ -174,44 +190,27 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
         [(ALAssetsGroup*)currentFetchResultRecord setAssetsFilter:[self assetFilter]];
     }
     PHFetchResult *assetsFetchResult = [currentFetchResultRecord allValues][0];
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ %lu", [currentFetchResultRecord allKeys][0],(unsigned long)assetsFetchResult.count];
+    cell.textLabel.text = [currentFetchResultRecord allKeys][0];
+    cell.detailTextLabel.text = @(assetsFetchResult.count).stringValue;
+    
+    CGFloat scale = [UIScreen mainScreen].scale;
+    CGSize tableCellThumbnailSize = CGSizeMake((FLSAlbumCellHeight-2)*scale, (FLSAlbumCellHeight-2)*scale);
     
     if ([assetsFetchResult count] > 0) {
-        CGFloat scale = [UIScreen mainScreen].scale;
-        
-        //Compute the thumbnail pixel size:
-        CGSize tableCellThumbnailSize = CGSizeMake(FLSAlbumCellHeight*scale, FLSAlbumCellHeight*scale);
-        PHAsset *asset = assetsFetchResult[0];
-        
-        PHImageRequestOptions *options = [PHImageRequestOptions new];
-        // Download from cloud if necessary
-        options.networkAccessAllowed    = YES;
-        
-        [self.imageManager requestImageForAsset:asset
-                                     targetSize:tableCellThumbnailSize
-                                    contentMode:PHImageContentModeAspectFill
-                                        options:options
-                                  resultHandler:^(UIImage *result, NSDictionary *info)
-         {
-             
-             CGFloat minSize     = MIN(result.size.width*scale, result.size.height*scale);
-             CGRect cropRect     = CGRectMake(0, 0, minSize, minSize);
-             cropRect.origin.x   = (result.size.width*scale - minSize)/2;
-             cropRect.origin.y   = (result.size.height*scale - minSize)/2;
-             
-             
-             CGImageRef imageRef = CGImageCreateWithImageInRect([result CGImage], cropRect);
-             UIImage * cropImage = [UIImage imageWithCGImage:imageRef];
-             CGImageRelease(imageRef);
-             
-             if(cell.tag == currentTag) {
-                 cell.imageView.image = cropImage;
-             }
-         }];
 
+        [self albumImageFromAlbum:assetsFetchResult withSize:tableCellThumbnailSize completion:^(UIImage *result) {
+            if (cell.tag == currentTag) {
+                cell.imageView.image = result;
+//                NSLog(@"Cell rect %@ image %@ scale %f", NSStringFromCGRect(cell.bounds), NSStringFromCGSize(result.size), result.scale);
+                [cell layoutSubviews];
+            }
+        }];
         
     } else {
-        cell.imageView.image = nil;
+        [self placeholderImageWithSize:tableCellThumbnailSize completion:^(UIImage *result) {
+            cell.imageView.image = result;
+            [cell layoutSubviews];
+        }];
     }
     
     return cell;
@@ -222,6 +221,122 @@ CGFloat     const FLSAlbumCellHeight   = 70.0;
     picker.assetGroup = [[self.assetGroups objectAtIndex:indexPath.row] allValues][0];
     
     [self.navigationController pushViewController:picker animated:YES];
+}
+
+
+#pragma mark - Draw
+- (void) placeholderImageWithSize:(CGSize)size completion:(void(^)(UIImage * result))completion {
+    if (_placeholderImage) {
+        if (completion) completion(_placeholderImage);
+        return;
+    }
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    
+        UIGraphicsBeginImageContextWithOptions(size, YES, 1.0);
+        CGContextRef context = UIGraphicsGetCurrentContext();
+
+        [[UIColor whiteColor] set];
+        CGContextFillRect(context, CGRectMake(0, 0, size.width, size.height));
+        
+        // draw place holder
+        [[UIColor groupTableViewBackgroundColor] set];
+        const CGRect mainRect = CGRectInset(CGRectMake(0, 0, size.width, size.height), size.width/7, size.height/4);
+        UIBezierPath *path  = [UIBezierPath bezierPathWithRoundedRect:mainRect cornerRadius:size.width/20];
+        path.lineWidth      = 4;
+        [path stroke];
+        
+        CGFloat padding     = mainRect.size.height/8;
+        CGRect circleRect   = CGRectOffset(mainRect, padding, padding);
+        circleRect.size     = CGSizeMake(mainRect.size.width/4, mainRect.size.width/4);
+        CGContextFillEllipseInRect(context, circleRect);
+        
+        path                = [UIBezierPath bezierPath];
+        path.lineWidth      = 2;
+        [path moveToPoint:CGPointMake(mainRect.origin.x + padding, CGRectGetMaxY(mainRect) - padding)];
+        [path addLineToPoint:CGPointMake(mainRect.origin.x + padding, CGRectGetMaxY(mainRect) - padding*2)];
+        [path addLineToPoint:CGPointMake(CGRectGetMaxX(circleRect) - padding/1.5, CGRectGetMaxY(circleRect) + padding*1)];
+        [path addLineToPoint:CGPointMake(CGRectGetMaxX(circleRect) + padding/2, CGRectGetMaxY(mainRect) - padding*2.5)];
+        [path addLineToPoint:CGPointMake(CGRectGetMaxX(circleRect)*1.6, mainRect.origin.y + padding*2)];
+        [path addLineToPoint:CGPointMake(CGRectGetMaxX(mainRect) - padding, CGRectGetMaxY(circleRect) + padding*1.5)];
+        [path addLineToPoint:CGPointMake(CGRectGetMaxX(mainRect) - padding, CGRectGetMaxY(mainRect) - padding)];
+        [path closePath];
+        [path fill];
+        
+        UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            _placeholderImage   = result;
+            if (completion) completion(_placeholderImage);
+        });
+    });
+}
+
+- (void) albumImageFromAlbum:(PHFetchResult*)album withSize:(CGSize)size completion:(void(^)(UIImage * result))completion {
+    
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+//        NSLog(@"Create placeholder image %@", NSStringFromCGSize(size));
+
+        UIGraphicsBeginImageContextWithOptions(size, NO, 1.0);
+        
+        CGContextRef context = UIGraphicsGetCurrentContext();
+        
+        [[UIColor clearColor] set];
+        CGContextFillRect(context, CGRectMake(0, 0, size.width, size.height));
+        
+        const CGFloat padding   = 6.0;
+        const CGRect mainRect = CGRectMake(padding, padding, size.width-padding*2, size.height-padding*2);
+        
+        PHImageRequestOptions *options  = [PHImageRequestOptions new];
+        options.deliveryMode            = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        options.resizeMode              = PHImageRequestOptionsResizeModeExact;
+        options.networkAccessAllowed    = YES;
+        options.synchronous             = YES;
+        
+        const int totalCount    = MIN((int)album.count, 3);
+        int count               = totalCount;
+        
+        for (PHAsset *asset in album) {
+            
+            CGRect current = CGRectInset(mainRect, padding*count, padding*count);
+            current.origin = CGPointMake((count+1)*padding, (totalCount-count+1)*padding);
+            
+            [self.imageManager requestImageForAsset:asset
+                                         targetSize:current.size
+                                        contentMode:PHImageContentModeAspectFill
+                                            options:options
+                                      resultHandler:^(UIImage *result, NSDictionary *info)
+             {
+                 
+                 CGFloat minSize     = MIN(result.size.width, result.size.height);
+                 CGRect cropRect     = CGRectMake(0, 0, minSize, minSize);
+                 cropRect.origin.x   = (result.size.width - minSize)/2;
+                 cropRect.origin.y   = (result.size.height - minSize)/2;
+                 
+                 CGImageRef imageRef = CGImageCreateWithImageInRect([result CGImage], cropRect);
+                 UIImage * cropImage = [UIImage imageWithCGImage:imageRef];
+                 CGImageRelease(imageRef);
+                 
+//                 NSLog(@"Draw image %@", NSStringFromCGRect(current));
+                 [cropImage drawAtPoint:current.origin];
+             }];
+            
+            count--;
+            if (count == 0)  break;
+        }
+        
+        UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) completion(result);
+        });
+
+    });
+
 }
 
 @end
